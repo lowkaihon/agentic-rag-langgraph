@@ -16,6 +16,9 @@
     },
     "hhemBackend": {
       "value": "vectara"
+    },
+    "cacheEnabled": {
+      "value": true
     }
   }
 }

@@ -74,7 +74,9 @@ jobs:
           az containerapp secret set \
             --name ${{ env.CONTAINER_APP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --secrets vectara-api-key="${{ secrets.VECTARA_API_KEY }}"
+            --secrets \
+              vectara-api-key="${{ secrets.VECTARA_API_KEY }}" \
+              redis-connection-string="${{ secrets.UPSTASH_REDIS_URL }}"
 
       - name: Update Container App Environment Variables
         run: |
@@ -84,7 +86,9 @@ jobs:
             --set-env-vars \
               HHEM_BACKEND=vectara \
               VECTARA_CUSTOMER_ID="${{ secrets.VECTARA_CUSTOMER_ID }}" \
-              VECTARA_API_KEY=secretref:vectara-api-key
+              VECTARA_API_KEY=secretref:vectara-api-key \
+              CACHE_ENABLED=true \
+              REDIS_URL=secretref:redis-connection-string
 
       - name: Get deployment URL
         run: |
