@@ -45,10 +45,10 @@ def calculate_retrieval_metrics(
     hit_rate = 1.0 if len(relevant_retrieved) > 0 else 0.0
 
     mrr = 0.0
-    for i, doc in enumerate(retrieved_docs[:k], start=1):
-        doc_id = doc.metadata.get("id", f"doc_{i-1}")
+    for i, doc in enumerate(retrieved_docs[:k]):
+        doc_id = doc.metadata.get("id", f"doc_{i}")
         if doc_id in ground_truth_doc_ids:
-            mrr = 1.0 / i
+            mrr = 1.0 / (i + 1)  # MRR uses 1-based ranking
             break
 
     return {

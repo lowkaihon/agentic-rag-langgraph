@@ -179,6 +179,10 @@ def conversational_rewrite_node(state: dict) -> dict:
         "generation_attempts": 0,  # Reset for new user question (0 = no attempts yet)
         "retry_feedback": None,  # Clear feedback for new user question
 
+        # Reset strategy switch state (prevents stale flags triggering incorrect revert on next turn)
+        "strategy_changed": None,
+        "previous_strategy": None,
+
         # Reset answer evaluation state (prevents state leakage across turns)
         "is_refusal": None,  # CRITICAL: Prevents routing logic treating new turn as refusal
         "is_answer_sufficient": None,
@@ -579,6 +583,9 @@ def answer_generation_node(state: dict) -> dict:
     if not context or context == "No context":
         return {
             "final_answer": "I apologize, but I could not retrieve any relevant documents to answer your question. Please try rephrasing your query or check if the information exists in the knowledge base.",
+            "generation_attempts": generation_attempts,
+            "is_refusal": True,  # Triggers END in route_after_evaluation (skip HHEM/quality eval)
+            "is_answer_sufficient": False,
             "messages": [AIMessage(content="Empty retrieval - no answer generated")],
         }
 

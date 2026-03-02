@@ -155,7 +155,7 @@ class VectaraHHEMBackend:
             return result.get("score", 0.5)
         except self.requests.exceptions.RequestException as e:
             logger.error(f"Vectara API error: {e}")
-            return 0.5  # Neutral score on API failure
+            return 0.0  # Fail-safe: treat as unsupported to trigger regeneration
 
 
 def create_hhem_backend() -> HHEMBackend:
