@@ -8,9 +8,14 @@ An advanced Agentic RAG system that autonomously adapts its retrieval strategy a
 
 ## Demo
 
-**[Try Live API](https://aca-agenticrag-api.jollyglacier-33123547.eastus.azurecontainerapps.io/docs)** | Swagger UI
-
 https://github.com/user-attachments/assets/c4168ac9-3eb0-45dc-be67-895299d8a97e
+
+> The walkthrough above tours the agent's graph in LangGraph Studio--its 7 nodes, conditional
+> routing, and self-correction loops. There is no hosted live endpoint: the Azure stack was
+> provisioned, verified end-to-end against the golden dataset, and then torn down to keep idle
+> cost at ~$0 (a portfolio project with no sustained traffic). You can run the entire system
+> locally in minutes (see [Quick Start](#quick-start)), or redeploy the full Azure stack (see
+> [Deployment & Cost](#deployment--cost)).
 
 ## Key Results
 
@@ -27,6 +32,7 @@ https://github.com/user-attachments/assets/c4168ac9-3eb0-45dc-be67-895299d8a97e
 - [Quick Start](#quick-start)
 - [Model Tier Configuration](#model-tier-configuration)
 - [Technology Stack](#technology-stack)
+- [Deployment & Cost](#deployment--cost)
 - [Evaluation](#evaluation)
 - [Future Improvements](#future-improvements)
 
@@ -232,8 +238,26 @@ MODEL_TIER=premium   # Maximum quality
 - **LLMs**: OpenAI GPT-4o-mini/GPT-5-mini/GPT-5.1/GPT-5-nano (configurable)
 - **PDF Processing**: Marker (layout-aware, table/figure extraction, OCR-capable)
 - **Reranking**: sentence-transformers (CrossEncoder)
-- **Hallucination Detection**: HHEM-2.1-Open (local) or HHEM-2.3 (Vectara API, deployed)
+- **Hallucination Detection**: HHEM-2.1-Open (local) or HHEM-2.3 (Vectara managed API)
 - **Package Manager**: uv
+
+## Deployment & Cost
+
+The system was deployed to **Azure Container Apps**, with Container Registry, Key Vault, and
+Application Insights--all defined as infrastructure-as-code in [`infra/main.bicep`](infra/main.bicep).
+(The live stack has since been torn down--see the [Demo](#demo) note.)
+
+Redeploy the full Azure stack from the Bicep in `infra/` with a single command:
+
+```bash
+./scripts/deploy-infra.sh   # provision all Azure resources via Bicep
+# then run the "Deploy to Azure Container Apps" workflow (manual trigger) to build & deploy
+```
+
+The deployed configuration uses `HHEM_BACKEND=vectara` (Vectara's managed HHEM-2.3 API) for
+hallucination detection, so a redeploy needs `VECTARA_API_KEY` / `VECTARA_CUSTOMER_ID`. For
+fully-offline runs, `HHEM_BACKEND=local` swaps in HHEM-2.1-Open (baked into the image),
+requiring only your `OPENAI_API_KEY`.
 
 ## Evaluation
 

@@ -3,10 +3,10 @@
 
 name: Deploy to Azure Container Apps
 
+# Manual-trigger only: the Azure stack is torn down between demos to keep idle cost
+# at ~$0 (see README "Deployment & Cost"). Re-provision with scripts/deploy-infra.sh
+# before running this workflow.
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       image_tag:
